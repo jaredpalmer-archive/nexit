@@ -1,3 +1,3 @@
 # Razzle
 
-A battle-tested build system for modern javascript applications.
+A build config for universal javascript applications.

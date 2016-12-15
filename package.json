@@ -1,13 +1,9 @@
 {
-  "name": "Razzle",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "razzle",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "dev": "npm-run-all --parallel watch:server watch:build",
-    "start": "NODE_ENV='development' webpack --config ./webpack/webpack.dev.server.js",
-    "watch:build": "NODE_ENV='development' webpack --watch",
-    "watch:server": "nodemon \"./build/server/main.js\" --watch \"./build/server\""
+    "start": "NODE_ENV='development' node ./webpack/dev.js"
   },
   "devDependencies": {
     "assets-webpack-plugin": "^3.5.0",
