@@ -21,18 +21,13 @@ module.exports = {
       `webpack-hot-middleware/client?reload=true&path=${clientUrl}/__webpack_hmr`,
       `${clientSrcPath}/index.js`,
     ],
-    // vendor: [
-    //   'react',
-    //   'react-dom'
-    // ]
   },
 
   output: {
-    filename: '[name].bundle.js',
+    filename: '[name].js',
     publicPath: publicPath,
     path: clientBuildPath,
     chunkFilename: '[name]-[chunkhash].js',
-    libraryTarget: 'var',
   },
 
   devServer: {
@@ -79,16 +74,10 @@ module.exports = {
       filename: 'assets.json',
       path: buildPath,
     }),
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'vendor',
-    //   minChunks: Infinity,
-    //   filename: 'vendor.bundle.js'
-    // }),
-    // new webpack.DefinePlugin({
-    //   '__DEV__': true
-    // }),
-
-    // new webpack.NamedModulesPlugin(),
+    new webpack.DefinePlugin({
+      '__DEV__': true
+    }),
+    new webpack.NamedModulesPlugin(),
     new FriendlyErrorsWebpackPlugin({
       compilationSuccessInfo: {
         messages: [`You application is running here ${serverUrl}`],
