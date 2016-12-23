@@ -6,11 +6,12 @@ import createMemoryHistory from 'react-router/lib/createMemoryHistory';
 import match from 'react-router/lib/match';
 import routes from '../common/routes'
 import bodyParser from 'body-parser'
-
+import assets from '../assets.json'
 
 const app = express()
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use('static', express.static('build/client'))
 const template = (html = '') => `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -25,7 +26,7 @@ const template = (html = '') => `<!DOCTYPE html>
   </head>
   <body>
     <div id="root">${html}</div>
-    <script src="http://localhost:3002/main.bundle.js"></script>
+    <script src="/static/${assets.main.js}"></script>
   </body>
 </html>
   `

@@ -14,6 +14,6 @@ module.exports = {
   publicSrcPath: path.join(rootPath, 'public'),
   publicBuildPath: path.join(buildPath, 'public'),
   publicPath: '/',
-  clientUrl: 'http://localhost:3002',
+  clientUrl: 'http://localhost:3001',
   serverUrl: 'http://localhost:3000'
 }

@@ -3,8 +3,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
-const WatchIgnorePlugin = require('watch-ignore-webpack-plugin')
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 
 const {
   buildPath,
@@ -30,6 +28,7 @@ module.exports = {
   output: {
     path: serverBuildPath,
     filename: '[name].js',
+    chunkFilename: '[name]-[chunkhash].js',
     publicPath: publicPath,
     libraryTarget: 'commonjs2',
   },
@@ -61,9 +60,5 @@ module.exports = {
         },
       },
     ]
-  },
-  plugins: [
-    new webpack.NoErrorsPlugin(),
-    // new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
-  ]
+  }
 }

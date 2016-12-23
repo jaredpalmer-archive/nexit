@@ -1,19 +1,32 @@
 import React from 'react'
-import { render } from 'react-dom'
-import Root from './Root'
+import ReactDOM from 'react-dom'
+import { match, browserHistory, Router } from 'react-router';
+import routes from '../common/routes';
 
 const root = document.querySelector('#root')
 
-const mount = (RootComponent) => {
-  render( <RootComponent />, root)
-}
+const onError = function(err) {
+  console.error(err);
+};
 
-// if (module.hot) {
-//   module.hot.accept('./Root', () => {
-//     // eslint-disable-next-line global-require,import/newline-after-import
-//     const RootComponent = require('./Root').default
-//     mount(RootComponent)
-//   })
+match({ history: browserHistory, routes }, (err, redirect, props) => {
+  ReactDOM.render(
+      <Router {...props} onError={onError} />,
+   root
+  );
+});
+
+
+// const mount = (RootComponent) => {
+//   render( <RootComponent />, root)
 // }
 
-mount(Root)
+// // if (module.hot) {
+// //   module.hot.accept('./Root', () => {
+// //     // eslint-disable-next-line global-require,import/newline-after-import
+// //     const RootComponent = require('./Root').default
+// //     mount(RootComponent)
+// //   })
+// // }
+
+// mount(Root)

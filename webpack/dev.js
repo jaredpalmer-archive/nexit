@@ -3,12 +3,13 @@ const path = require('path');
 const chokidar = require('chokidar');
 const express = require('express');
 const webpack = require('webpack');
+const url = require('url')
 const once = require('ramda').once
 const devMiddleware = require('webpack-dev-middleware');
 const hotMiddleware = require('webpack-hot-middleware');
 const serverConfig = require('./webpack.dev.server')
 const clientConfig = require('./webpack.dev.client')
-const { serverSrcPath, buildPath } = require('./buildConfig')
+const { clientUrl, serverSrcPath, buildPath } = require('./buildConfig')
 
 
 process.on('SIGINT', process.exit);
@@ -46,7 +47,7 @@ const startClient = () => {
     log: () => {},
     path: '/__webpack_hmr'
   }));
-  app.listen(3002);
+  app.listen(url.parse(clientUrl).port);
 };
 
 const serverCompiler = webpack(serverConfig, (err, stats) => {

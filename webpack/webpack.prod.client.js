@@ -18,25 +18,15 @@ module.exports = {
   entry: {
     main: [
       'babel-polyfill',
-      `webpack-hot-middleware/client?reload=true&path=${clientUrl}/__webpack_hmr`,
       `${clientSrcPath}/index.js`,
     ],
   },
 
   output: {
-    filename: '[name].bundle.js',
-    chunkFilename: '[name].[id].chunk.js',
-    publicPath: '/',
-    path: clientBuildPath,
-    libraryTarget: 'var',
-  },
-
-  devServer: {
-    // hot: true,
-    noInfo: true,
+    filename: '[name]-[chunkhash].js',
+    chunkFilename: '[name]-[chunkhash].js',
     publicPath: publicPath,
-    quiet: true,
-    headers: { 'Access-Control-Allow-Origin': '*' }
+    path: clientBuildPath,
   },
 
   module: {
@@ -68,17 +58,29 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.NoErrorsPlugin(),
-    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      '__DEV__': false
+    }),
+
+    new webpack.LoaderOptionsPlugin({
+      minimize: true,
+      debug: false,
+    }),
+
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        screw_ie8: true,
+        warnings: false,
+      },
+      output: {
+        comments: false,
+      },
+      sourceMap: true,
+    }),
+
     new AssetsPlugin({
       filename: 'assets.json',
-      path: buildPath,
-    }),
-    new webpack.DefinePlugin({
-      '__DEV__': true
-    }),
-    new webpack.NamedModulesPlugin(),
-    new FriendlyErrorsWebpackPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
+    })
   ]
 }
