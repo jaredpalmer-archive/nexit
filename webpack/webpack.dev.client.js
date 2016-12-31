@@ -1,6 +1,3 @@
-'use strict'
-
-const path = require('path');
 const webpack = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
@@ -9,7 +6,6 @@ const {
   clientSrcPath,
   clientBuildPath,
   clientUrl,
-  serverUrl,
   publicPath
 } = require('./buildConfig')
 

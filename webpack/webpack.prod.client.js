@@ -1,15 +1,9 @@
-'use strict'
-
-const path = require('path');
 const webpack = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin')
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const {
   buildPath,
   clientSrcPath,
   assetsBuildPath,
-  clientUrl,
-  serverUrl,
   publicPath
 } = require('./buildConfig')
 
@@ -56,7 +50,6 @@ module.exports = {
         ],
         options: {
           presets: [
-          //  ["latest", { "es2015": { "modules": false  } }],
            'react-app'
           ],
         },
