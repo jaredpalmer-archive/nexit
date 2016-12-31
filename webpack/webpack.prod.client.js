@@ -7,7 +7,7 @@ const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const {
   buildPath,
   clientSrcPath,
-  clientBuildPath,
+  assetsBuildPath,
   clientUrl,
   serverUrl,
   publicPath
@@ -15,6 +15,7 @@ const {
 
 module.exports = {
   devtool: 'source-map',
+  target: 'web',
   entry: {
     main: [
       'babel-polyfill',
@@ -26,7 +27,8 @@ module.exports = {
     filename: '[name]-[chunkhash].js',
     chunkFilename: '[name]-[chunkhash].js',
     publicPath: publicPath,
-    path: clientBuildPath,
+    path: assetsBuildPath,
+    libraryTarget: 'var',
   },
 
   module: {
@@ -49,8 +51,9 @@ module.exports = {
           /node_modules/,
           buildPath,
         ],
-        query: {
+        options: {
           presets: [
+           ["latest", { "es2015": { "modules": false  } }],
            'react-app'
           ],
         },
@@ -65,7 +68,10 @@ module.exports = {
 
     new webpack.LoaderOptionsPlugin({
       minimize: true,
-      debug: false,
+      debug: true,
+      options: {
+        context: '/',
+      },
     }),
 
     new webpack.optimize.UglifyJsPlugin({
@@ -79,8 +85,13 @@ module.exports = {
       sourceMap: true,
     }),
 
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   names: ['vendor'],
+    //   minChunks: Infinity,
+    // }),
     new AssetsPlugin({
       filename: 'assets.json',
+      path: buildPath
     })
   ]
 }

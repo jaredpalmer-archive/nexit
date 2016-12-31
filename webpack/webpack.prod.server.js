@@ -53,12 +53,24 @@ module.exports = {
           /node_modules/,
           buildPath,
         ],
-        query: {
+        options: {
           presets: [
-           "react-app"
+            ["latest", { "es2015": { "modules": false  } }],
+           'react-app'
           ],
         },
       },
     ]
-  }
+  },
+  plugins: [
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        context: '/',
+      },
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      '__DEV__': false
+    })
+  ]
 }

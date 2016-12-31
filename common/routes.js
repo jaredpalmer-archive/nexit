@@ -2,16 +2,24 @@ import React from 'react'
 import { Router, Route, IndexRoute } from 'react-router'
 import App from './App'
 
-const importHome = (nextState, cb) => {
+const importHome = function (nextState, cb) {
   System.import('./Home')
-    .then(module => cb(null, module.default))
-    .catch((e) => { throw e; });
+    .then(function(module) {
+      cb(null, module.default)
+    })
+    .catch(function(e) {
+      throw e;
+    });
 };
 
-const importAbout = (nextState, cb) => {
+const importAbout = function (nextState, cb) {
   System.import('./About')
-    .then(module => cb(null, module.default))
-    .catch((e) => { throw e; });
+    .then(function(module) {
+      cb(null, module.default)
+    })
+    .catch(function(e) {
+      throw e;
+    });
 };
 
 // We use `getComponent` to dynamically load routes.

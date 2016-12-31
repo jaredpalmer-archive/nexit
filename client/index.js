@@ -1,32 +1,25 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { match, browserHistory, Router } from 'react-router';
-import routes from '../common/routes';
+import React from 'react';
+import { render } from 'react-dom';
+import { AppContainer } from 'react-hot-loader';
+import Root from './Root';
 
-const root = document.querySelector('#root')
+const root = document.querySelector('#root');
 
-const onError = function(err) {
-  console.error(err);
+const mount = (RootComponent) => {
+  render(
+    <AppContainer>
+      <RootComponent />
+    </AppContainer>,
+    root
+  );
 };
 
-match({ history: browserHistory, routes }, (err, redirect, props) => {
-  ReactDOM.render(
-      <Router {...props} onError={onError} />,
-   root
-  );
-});
+if (module.hot) {
+  module.hot.accept('./Root', function () {
+    // eslint-disable-next-line global-require,import/newline-after-import
+    const RootComponent = require('./Root').default;
+    mount(RootComponent);
+  });
+}
 
-
-// const mount = (RootComponent) => {
-//   render( <RootComponent />, root)
-// }
-
-// // if (module.hot) {
-// //   module.hot.accept('./Root', () => {
-// //     // eslint-disable-next-line global-require,import/newline-after-import
-// //     const RootComponent = require('./Root').default
-// //     mount(RootComponent)
-// //   })
-// // }
-
-// mount(Root)
+mount(Root);

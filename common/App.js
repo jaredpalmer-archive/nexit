@@ -1,16 +1,14 @@
 import React, {Component} from 'react'
-import Link from 'react-router/lib/Link'
+import { IndexLink, Link } from 'react-router'
 
-class App extends Component {
-  render () {
-    return (
-      <div>
+const App = ({children}) => {
+  return (
+    <div>
+      <Link to="/">Homes</Link>
       <Link to="/about">About</Link>
-      <Link to="/">Home</Link>
-        {this.props.children}
-      </div>
-    )
-  }
+        {children}
+    </div>
+  )
 }
 
 export default App

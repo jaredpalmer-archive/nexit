@@ -15,8 +15,10 @@ const {
 
 module.exports = {
   devtool: 'source-map',
+  target: 'web',
   entry: {
     main: [
+      'react-hot-loader/patch',
       'babel-polyfill',
       `webpack-hot-middleware/client?reload=true&path=${clientUrl}/__webpack_hmr`,
       `${clientSrcPath}/index.js`,
@@ -25,14 +27,18 @@ module.exports = {
 
   output: {
     filename: '[name].bundle.js',
-    chunkFilename: '[name].[id].chunk.js',
+    chunkFilename: '[name]-[chunkhash].js',
     publicPath: '/',
     path: clientBuildPath,
     libraryTarget: 'var',
   },
 
+  performance: {
+    hints: false
+  },
+
   devServer: {
-    // hot: true,
+    hot: true,
     noInfo: true,
     publicPath: publicPath,
     quiet: true,
@@ -59,22 +65,29 @@ module.exports = {
           /node_modules/,
           buildPath,
         ],
-        query: {
+        options: {
           presets: [
+           ["latest", { "es2015": { "modules": false  } }],
            'react-app'
           ],
+          env: {
+            development: {
+              plugins: [require.resolve('react-hot-loader/babel')],
+            },
+          },
         },
       },
     ]
   },
   plugins: [
-    new webpack.NoErrorsPlugin(),
+    // new webpack.NoErrorsPlugin(),
     new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
     new AssetsPlugin({
       filename: 'assets.json',
       path: buildPath,
     }),
     new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development'),
       '__DEV__': true
     }),
     new webpack.NamedModulesPlugin(),

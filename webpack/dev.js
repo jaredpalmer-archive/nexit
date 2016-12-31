@@ -11,8 +11,42 @@ const serverConfig = require('./webpack.dev.server')
 const clientConfig = require('./webpack.dev.client')
 const { clientUrl, serverSrcPath, buildPath } = require('./buildConfig')
 
-
 process.on('SIGINT', process.exit);
+
+// const myCompiler = (webpackConfig, cb) => {
+//   let webpackCompiler;
+//   const type = webpackConfig.target === 'web' ? 'Client' : 'Server';
+
+//   // Compile the webpack config
+//   try {
+//     webpackCompiler = webpack(webpackConfig);
+//     console.log(`${type} webpack configuration compiled`);
+//   } catch (error) {
+//     console.error(`${type} webpack config is invalid\n`, error);
+//     process.exit();
+//   }
+
+//   // Handle errors in webpack build
+//   webpackCompiler.plugin('done', (stats) => {
+//     if (stats.hasErrors()) {
+//       console.error(`${type} build failed\n`, stats.toString());
+//       console.info('See webpack error above');
+//     } else if (stats.hasWarnings()) {
+//       console.warn(`${type} build warnings`, stats.toString());
+//     } else {
+//       console.log(`${type} build successful`);
+//     }
+
+//     // Call the callback on successful build
+//     if (cb) {
+//       cb(stats);
+//     }
+//   });
+
+
+  // Return the compiler
+//   return webpackCompiler;
+// };
 
 
 const startServer = () => {
@@ -20,23 +54,25 @@ const startServer = () => {
     .keys(serverCompiler.options.entry)
     .map(entry => path.join(serverCompiler.options.output.path, `${entry}.js`));
   const mainPath = path.join(serverCompiler.options.output.path, 'main.js');
-  nodemon({ script: mainPath, watch: serverPaths })
+  nodemon({ script: mainPath, watch: serverPaths, flags: [] })
     .once('start', () => {
-      // console.log(`Server running at: ${'http://localhost:3000'}`);
-      // console.log('Development started');
+      console.log(`NODEMON: Server running at: ${'http://localhost:3000'}`);
+      console.log('NODEMON: Development started');
     })
-    .on('restart', () => console.log('Development server restarted'))
+    .on('restart', () => console.log('NODEMON: Development server restarted'))
     .on('quit', process.exit);
 };
 
-const clientCompiler = webpack(clientConfig, (err, stats) => {
-   if (err) {
-    console.log(err)
-    return;
-  }
-  compileServer();
+const afterClientCompile = once(() => {
+  console.log('[WEBPACK-CLIENT]: Setup RHL')
+  console.log('[WEBPACK-CLIENT]: Done compiling client')
 })
 
+clientCompiler = webpack(clientConfig, (err, stats) => {
+  if (err) process.exit(1)
+  afterClientCompile();
+  compileServer();
+})
 
 const startClient = () => {
   const devOptions = clientCompiler.options.devServer;
@@ -44,27 +80,17 @@ const startClient = () => {
   const webpackDevMiddleware = devMiddleware(clientCompiler, devOptions);
   app.use(webpackDevMiddleware);
   app.use(hotMiddleware(clientCompiler, {
-    log: () => {},
-    path: '/__webpack_hmr'
-  }));
+    log: () => {}
+  }))
   app.listen(url.parse(clientUrl).port);
+  console.log('[WEBPACK-CLIENT]: Started asset server on http://localhost:' + url.parse(clientUrl).port)
 };
-
-const serverCompiler = webpack(serverConfig, (err, stats) => {
-  if (err) {
-    console.log(err)
-    return;
-  }
-  startServerOnce();
-})
 
 const compileServer = () => serverCompiler.run(() => undefined);
 
+const startServerOnce = once(startServer)
 
-
-const startServerOnce = once(() => startServer())
-
-const watcher = chokidar.watch([serverSrcPath, path.join(__dirname, '../common')]);
+const watcher = chokidar.watch([serverSrcPath]);
 
 watcher.on('ready', () => {
   watcher
@@ -73,6 +99,13 @@ watcher.on('ready', () => {
     .on('change', compileServer)
     .on('unlink', compileServer)
     .on('unlinkDir', compileServer);
+});
+
+const serverCompiler = webpack(serverConfig, (err, stats) => {
+  if (err) process.exit(1)
+  else {
+    startServerOnce();
+  }
 });
 
 startClient()

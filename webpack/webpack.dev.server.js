@@ -3,7 +3,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
-const WatchIgnorePlugin = require('watch-ignore-webpack-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 
 const {
@@ -17,6 +16,9 @@ module.exports = {
   target: 'node',
   devtool: 'source-map',
   externals: [nodeExternals()],
+  performance: {
+    hints: false
+  },
   node: {
     __filename: false,
     __dirname: false
@@ -30,6 +32,7 @@ module.exports = {
   output: {
     path: serverBuildPath,
     filename: '[name].js',
+    chunkFilename: '[name]-[chunkhash].js',
     publicPath: publicPath,
     libraryTarget: 'commonjs2',
   },
@@ -56,7 +59,8 @@ module.exports = {
         ],
         query: {
           presets: [
-           "react-app"
+           ["latest", { "es2015": { "modules": false  } }],
+           'react-app'
           ],
         },
       },
@@ -64,6 +68,10 @@ module.exports = {
   },
   plugins: [
     new webpack.NoErrorsPlugin(),
-    // new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development'),
+      '__DEV__': true
+    }),
+    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
   ]
 }

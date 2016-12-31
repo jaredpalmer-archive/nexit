@@ -3,16 +3,19 @@ import React from 'react'
 import ReactDOM from 'react-dom/server'
 import RouterContext from 'react-router/lib/RouterContext';
 import createMemoryHistory from 'react-router/lib/createMemoryHistory';
-import match from 'react-router/lib/match';
+import { match } from 'react-router';
 import routes from '../common/routes'
 import bodyParser from 'body-parser'
-import assets from '../assets.json'
+
+const assets = require('../build/assets.json')
+const assetUrl = __DEV__ ? 'http://localhost:3001' : 'http://localhost:3000'
 
 const app = express()
+import path from 'path'
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use('static', express.static('build/client'))
-const template = (html = '') => `<!DOCTYPE html>
+app.use(express.static(path.join(__dirname, '../public')))
+const template = (html) => `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -25,11 +28,10 @@ const template = (html = '') => `<!DOCTYPE html>
     <title>RP</title>
   </head>
   <body>
-    <div id="root">${html}</div>
-    <script src="/static/${assets.main.js}"></script>
+    <div id="root"><div>${html}</div></div>
+    <script src="${assetUrl + assets.main.js}"></script>
   </body>
-</html>
-  `
+</html>`
 
 app.get('/*', (req, res) => {
   const history = createMemoryHistory(req.originalUrl);

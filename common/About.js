@@ -9,12 +9,14 @@ class About extends Component {
   }
   onClick = (e) => {
     e.preventDefault()
-    this.setState({value: 'clickeds'})
+    this.setState({value: 'clicked'})
   }
   render () {
     return (
       <div onClick={this.onClick}>
         {this.state.value}
+
+        This is the about
       </div>
     )
   }
