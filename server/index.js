@@ -1,51 +1,101 @@
+/* global __DEV__ */
 import express from 'express'
+import bodyParser from 'body-parser'
+import compression from 'compression'
+import helmet from 'helmet'
+import hpp from 'hpp'
+
 import React from 'react'
 import ReactDOM from 'react-dom/server'
-import RouterContext from 'react-router/lib/RouterContext';
-import createMemoryHistory from 'react-router/lib/createMemoryHistory';
-import { match } from 'react-router';
-import routes from '../common/routes'
-import bodyParser from 'body-parser'
+import ReactHelmet from 'react-helmet'
+import RouterContext from 'react-router/lib/RouterContext'
+import createMemoryHistory from 'react-router/lib/createMemoryHistory'
+import match from 'react-router/lib/match'
 
+import routes from '../common/routes'
 const assets = require('../build/assets.json')
-const assetUrl = __DEV__ ? 'http://localhost:3001' : 'http://localhost:3000'
+const assetUrl = __DEV__ ? 'http://localhost:3001' : ''
 
 const app = express()
-import path from 'path'
+
+
+// Hide all software information
+app.disable('x-powered-by')
+
+// Prevent HTTP Parameter pollution.
+// @note: Make sure body parser goes above the hpp middleware
+app.use(hpp())
+
+// Content Security Policy
+const csp = {
+  directives: {
+    defaultSrc: ["'self'"],
+    // external scripts here...
+    scriptSrc: ["'self' 'unsafe-inline' 'unsafe-eval'", 'cdn.polyfill.io'],
+    styleSrc: ["'self' 'unsafe-inline'", 'fonts.googleapis.com', 'blob:'],
+    imgSrc: ["'self' 'unsafe-inline'", 'data:'],
+    // external api's here
+    connectSrc: ["'self'", 'ws:', 'swapi.co'],
+    fontSrc: ["'self'", 'fonts.gstatic.com'],
+    objectSrc: ["'none'"],
+    mediaSrc: ["'none'"],
+    frameSrc: ["'none'"]
+  }
+}
+
+if (__DEV__) {
+  csp.directives.connectSrc.push('http://localhost:3001')
+  csp.directives.scriptSrc.push('http://localhost:3001')
+}
+
+app.use(helmet.contentSecurityPolicy(csp))
+app.use(helmet.xssFilter())
+app.use(helmet.frameguard('deny'))
+app.use(helmet.ieNoOpen())
+app.use(helmet.noSniff())
+
+// Set view engine
+app.use(compression())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use(express.static(path.join(__dirname, '../public')))
-const template = (html) => `<!DOCTYPE html>
-<html lang="en">
+app.use(express.static('build/public'))
+
+app.get('*', (req, res) => {
+  res.set('content-type', 'text/html')
+  // yes, we can start sending down html right now....
+  res.write('<!doctype html>')
+  res.write(`<html>
   <head>
+    <meta charset="utf-8">
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta charSet='utf-8' />
     <meta httpEquiv="Content-Language" content="en" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link id="favicon" rel="shortcut icon" href="/kyt-favicon.png" sizes="16x16 32x32" type="image/png" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css">
-    <title>RP</title>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6"></script>
+    <script src="${assetUrl + assets.main.js}" defer></script>
+    <!-- CHUNK -->`)
+  res.flush()
+
+  match({
+    routes,
+    history: createMemoryHistory(req.originalUrl)
+  }, (error, redirectLocation, renderProps) => {
+    if (error) {
+      res.status(500).send(error.message)
+    } else if (redirectLocation) {
+      res.redirect(302, `${redirectLocation.pathname}${redirectLocation.search}`)
+    } else if (renderProps) {
+      const html = ReactDOM.renderToString(<RouterContext {...renderProps} />)
+      const { meta, title, link } = ReactHelmet.rewind()
+      // finish sending the page to the browser
+      res.write(`${meta} ${title} ${link}
   </head>
   <body>
     <div id="root"><div>${html}</div></div>
-    <script src="${assetUrl + assets.main.js}"></script>
   </body>
-</html>`
-
-app.get('/*', (req, res) => {
-  const history = createMemoryHistory(req.originalUrl);
-
-   match({ routes, history }, (error, redirectLocation, renderProps) => {
-    if (error) {
-      res.status(500).send(error.message);
-    } else if (redirectLocation) {
-      res.redirect(302, `${redirectLocation.pathname}${redirectLocation.search}`);
-    } else if (renderProps) {
-      const html = ReactDOM.renderToString(<RouterContext {...renderProps} />)
-      res.status(200).send(template(html))
+</html>`)
+      res.end()
     } else {
-      res.status(404).send('Not found');
+      res.status(404).send('Not found')
     }
   })
 })

@@ -43,8 +43,11 @@
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "express": "^4.14.0",
+    "helmet": "^3.2.0",
+    "hpp": "^0.2.1",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
+    "react-helmet": "^3.3.0",
     "react-router": "^2.6.1"
   }
 }
