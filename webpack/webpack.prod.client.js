@@ -14,6 +14,11 @@ module.exports = {
   // @see https://github.com/webpack/webpack/issues/959
   cache: false,
   entry: {
+    vendor: [
+      'react',
+      'react-dom',
+      'react-helmet',
+    ],
     main: [
       'babel-polyfill',
       `${clientSrcPath}/index.js`,
@@ -23,6 +28,7 @@ module.exports = {
   output: {
     filename: '[name]-[chunkhash].js',
     chunkFilename: '[name]-[chunkhash].js',
+    sourceMapFilename: '[name]-[chunkhash].map',
     publicPath: publicPath,
     path: assetsBuildPath,
     libraryTarget: 'var',
@@ -59,7 +65,15 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
-      '__DEV__': false
+      '__DEV__': false,
+      '__CLIENT__': true,
+      '__SERVER__': false
+    }),
+
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: Infinity,
+      filename: 'vendor-[hash].js',
     }),
 
     new webpack.optimize.UglifyJsPlugin({

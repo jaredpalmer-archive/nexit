@@ -1,26 +1,46 @@
-import React from 'react'
-import { render } from 'react-dom'
-import { AppContainer } from 'react-hot-loader'
-import Root from './Root'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Router from 'react-router/lib/Router';
+import browserHistory from 'react-router/lib/browserHistory';
+import applyRouterMiddleware from 'react-router/lib/applyRouterMiddleware';
+import useScroll from 'react-router-scroll/lib/useScroll';
+import match from 'react-router/lib/match';
+import routes from '../common/routes'
 
-const root = document.querySelector('#root')
+// Render the application
+const render = (target = 'root') => {
+  match({
+    routes: (<Router>{routes}</Router>),
+    location: window.location,
+  }, (err, location, props) => {
 
-const mount = (RootComponent) => {
-  render(
-    <AppContainer>
-      <RootComponent />
-    </AppContainer>,
-    root
-  )
-}
+    // Make sure that all System.imports are loaded before rendering
+    const imports = props.routes
+      .filter(route => route.getComponent)
+      .map(route => new Promise(resolve => route.getComponent(location, resolve)));
 
-// Setup Hot Module Replacement x React Hot Loader
+    // Run the chain
+    Promise.all(imports)
+      .then(() => {
+        ReactDOM.render(
+          <Router
+            history={browserHistory}
+            render={applyRouterMiddleware(useScroll())}
+          >
+            {props.routes}
+          </Router>,
+          document.getElementById(target)
+        );
+      });
+  });
+};
+
+// Render for the first time
+render();
+
 if (module.hot) {
-  module.hot.accept('./Root', function () {
-    // eslint-disable-next-line global-require,import/newline-after-import
-    const RootComponent = require('./Root').default
-    mount(RootComponent)
-  })
+  // Remove some warnings and errors related to
+  // hot reloading and System.import conflicts.
+  require('../common/utils/hmr'); // eslint-disable-line
+  module.hot.accept(() => render());
 }
-
-mount(Root)

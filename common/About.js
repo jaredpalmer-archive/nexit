@@ -14,7 +14,7 @@ class About extends Component {
     return (
       <div onClick={this.onClick}>
         {this.state.value}
-        This is the about
+        This is pretty dopess
       </div>
     )
   }

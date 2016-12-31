@@ -7,7 +7,7 @@ const App = ({ children }) => {
     <div>
       <Helmet title='Razzle' />
       <Link to='/'>Homes</Link>
-      <Link to='/about'>About</Link>
+      <Link to='/about'>Abousssst</Link>
       {children}
     </div>
   )

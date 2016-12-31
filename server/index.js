@@ -14,8 +14,7 @@ import match from 'react-router/lib/match'
 
 import routes from '../common/routes'
 const assets = require('../build/assets.json')
-const assetUrl = __DEV__ ? 'http://localhost:3001' : ''
-
+const assetUrl = ''
 const app = express()
 
 
@@ -49,10 +48,10 @@ const csp = {
 
 // Tweak CSP in development to allow loading js assets from
 // the client assets server (which is on a different port)
-if (__DEV__) {
-  csp.directives.connectSrc.push('http://localhost:3001')
-  csp.directives.scriptSrc.push('http://localhost:3001')
-}
+// if (__DEV__) {
+//   csp.directives.connectSrc.push('http://localhost:3001')
+//   csp.directives.scriptSrc.push('http://localhost:3001')
+// }
 
 // Make express more secure
 app.use(helmet.contentSecurityPolicy(csp))
@@ -91,6 +90,7 @@ app.get('/*', (req, res) => {
     <meta httpEquiv="Content-Language" content="en" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6"></script>
+    <script src="${assetUrl + assets.vendor.js}" defer></script>
     <script src="${assetUrl + assets.main.js}" defer></script>
     ${meta} ${title} ${link}
   </head>
@@ -104,6 +104,18 @@ app.get('/*', (req, res) => {
   })
 })
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`> listening on port ${ process.env.PORT || 3000 }`)
-})
+// app.listen(, () => {
+//   console.log(`> listening on port ${ process.env.PORT || 3000 }`)
+// })
+import http from 'http'
+// Create HTTP Server
+const server = http.createServer(app);
+
+const port = (parseInt(process.env.PORT, 10) || 3000) - !!__DEV__
+// Start
+const listener = server.listen(port, err => {
+  if (err) throw err;
+  console.log(`🚀  started on port ${port}`);
+});
+
+export default listener;

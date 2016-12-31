@@ -64,7 +64,9 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
-      '__DEV__': false
+      '__DEV__': false,
+      '__CLIENT__': false,
+      '__SERVER__': true
     }),
     new webpack.BannerPlugin({
       raw: true,

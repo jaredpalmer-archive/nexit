@@ -5,18 +5,26 @@ const {
   buildPath,
   clientSrcPath,
   clientBuildPath,
-  clientUrl,
   publicPath
 } = require('./buildConfig')
+
+
+const port = (parseInt(process.env.PORT, 10) || 3000) - 1;
+const proxyPort = port + 1;
 
 module.exports = {
   devtool: 'source-map',
   target: 'web',
   entry: {
+    vendor: [
+      'react',
+      'react-dom',
+      'react-helmet',
+    ],
     main: [
       'react-hot-loader/patch',
+      `webpack-hot-middleware/client?reload=true&path=http://localhost:${proxyPort}/__webpack_hmr`,
       'babel-polyfill',
-      `webpack-hot-middleware/client?reload=true&path=${clientUrl}/__webpack_hmr`,
       `${clientSrcPath}/index.js`,
     ],
   },
@@ -24,6 +32,7 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     chunkFilename: '[name]-[chunkhash].js',
+    sourceMapFilename: '[name].map',
     publicPath: '/',
     path: clientBuildPath,
     libraryTarget: 'var',
@@ -70,30 +79,40 @@ module.exports = {
         query: {
           presets: [
            'react-app'
+          ],
+          plugins: [
+            'react-hot-loader/babel'
           ]
         }
       }
     ]
   },
   plugins: [
-    new webpack.NoErrorsPlugin(),
     new webpack.LoaderOptionsPlugin({
       eslint: {
         parser: 'babel-eslint',
         extends: 'react-app'
       }
     }),
-    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: Infinity,
+      filename: 'vendor.js',
+    }),
+    // new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
     new AssetsPlugin({
       filename: 'assets.json',
       path: buildPath,
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'),
-      '__DEV__': true
+      '__DEV__': true,
+      '__CLIENT__': true,
+      '__SERVER__': false
     }),
     new webpack.NamedModulesPlugin(),
     new FriendlyErrorsWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin()
   ]
 }
