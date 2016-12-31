@@ -14,6 +14,7 @@ const mount = (RootComponent) => {
   )
 }
 
+// Setup Hot Module Replacement x React Hot Loader
 if (module.hot) {
   module.hot.accept('./Root', function () {
     // eslint-disable-next-line global-require,import/newline-after-import

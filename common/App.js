@@ -5,7 +5,7 @@ import Helmet from 'react-helmet'
 const App = ({ children }) => {
   return (
     <div>
-      <Helmet title="Razzle" />
+      <Helmet title='Razzle' />
       <Link to='/'>Homes</Link>
       <Link to='/about'>About</Link>
       {children}

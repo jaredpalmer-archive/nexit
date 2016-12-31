@@ -22,6 +22,10 @@ const app = express()
 // Hide all software information
 app.disable('x-powered-by')
 
+// Accept and parse JSON with body parser
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
 // Prevent HTTP Parameter pollution.
 // @note: Make sure body parser goes above the hpp middleware
 app.use(hpp())
@@ -43,11 +47,14 @@ const csp = {
   }
 }
 
+// Tweak CSP in development to allow loading js assets from
+// the client assets server (which is on a different port)
 if (__DEV__) {
   csp.directives.connectSrc.push('http://localhost:3001')
   csp.directives.scriptSrc.push('http://localhost:3001')
 }
 
+// Make express more secure
 app.use(helmet.contentSecurityPolicy(csp))
 app.use(helmet.xssFilter())
 app.use(helmet.frameguard('deny'))
@@ -56,25 +63,13 @@ app.use(helmet.noSniff())
 
 // Set view engine
 app.use(compression())
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+
+// Serve up static assets
 app.use(express.static('build/public'))
 
-app.get('*', (req, res) => {
+// Render React
+app.get('/*', (req, res) => {
   res.set('content-type', 'text/html')
-  // yes, we can start sending down html right now....
-  res.write('<!doctype html>')
-  res.write(`<html>
-  <head>
-    <meta charset="utf-8">
-    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta httpEquiv="Content-Language" content="en" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6"></script>
-    <script src="${assetUrl + assets.main.js}" defer></script>
-    <!-- CHUNK -->`)
-  res.flush()
-
   match({
     routes,
     history: createMemoryHistory(req.originalUrl)
@@ -87,13 +82,22 @@ app.get('*', (req, res) => {
       const html = ReactDOM.renderToString(<RouterContext {...renderProps} />)
       const { meta, title, link } = ReactHelmet.rewind()
       // finish sending the page to the browser
-      res.write(`${meta} ${title} ${link}
+      res.status(200).send(`
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta httpEquiv="Content-Language" content="en" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6"></script>
+    <script src="${assetUrl + assets.main.js}" defer></script>
+    ${meta} ${title} ${link}
   </head>
   <body>
     <div id="root"><div>${html}</div></div>
   </body>
 </html>`)
-      res.end()
     } else {
       res.status(404).send('Not found')
     }
