@@ -1,9 +1,9 @@
-import React from 'react';
-import { render } from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
-import Root from './Root';
+import React from 'react'
+import { render } from 'react-dom'
+import { AppContainer } from 'react-hot-loader'
+import Root from './Root'
 
-const root = document.querySelector('#root');
+const root = document.querySelector('#root')
 
 const mount = (RootComponent) => {
   render(
@@ -11,15 +11,15 @@ const mount = (RootComponent) => {
       <RootComponent />
     </AppContainer>,
     root
-  );
-};
+  )
+}
 
 if (module.hot) {
   module.hot.accept('./Root', function () {
     // eslint-disable-next-line global-require,import/newline-after-import
-    const RootComponent = require('./Root').default;
-    mount(RootComponent);
-  });
+    const RootComponent = require('./Root').default
+    mount(RootComponent)
+  })
 }
 
-mount(Root);
+mount(Root)

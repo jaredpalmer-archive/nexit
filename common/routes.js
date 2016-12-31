@@ -1,5 +1,5 @@
 import React from 'react'
-import { Router, Route, IndexRoute } from 'react-router'
+import { Route, IndexRoute } from 'react-router'
 import App from './App'
 
 const importHome = (nextState, cb) => {
@@ -17,9 +17,9 @@ const importAbout = (nextState, cb) => {
 // We use `getComponent` to dynamically load routes.
 // https://github.com/reactjs/react-router/blob/master/docs/guides/DynamicRouting.md
 const routes = (
-  <Route path="/" component={App}>
+  <Route path='/' component={App}>
     <IndexRoute getComponent={importHome} />
-    <Route path="about" getComponent={importAbout} />
+    <Route path='about' getComponent={importAbout} />
   </Route>
 )
 

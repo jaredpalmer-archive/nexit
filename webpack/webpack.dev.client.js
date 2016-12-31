@@ -48,6 +48,12 @@ module.exports = {
   module: {
     rules: [
       {
+        enforce: 'pre',
+        test: /\.(js|jsx)$/,
+        loader: 'eslint-loader',
+        exclude: /(node_modules)/,
+      },
+      {
         test: /\.(jpg|jpeg|png|gif|eot|svg|ttf|woff|woff2)$/,
         loader: 'url-loader',
         options: {
@@ -63,24 +69,24 @@ module.exports = {
         loader: 'babel-loader',
         exclude: [
           /node_modules/,
-          buildPath,
+          buildPath
         ],
-        options: {
+        query: {
           presets: [
-           ["latest", { "es2015": { "modules": false  } }],
            'react-app'
-          ],
-          env: {
-            development: {
-              plugins: [require.resolve('react-hot-loader/babel')],
-            },
-          },
-        },
-      },
+          ]
+        }
+      }
     ]
   },
   plugins: [
-    // new webpack.NoErrorsPlugin(),
+    new webpack.NoErrorsPlugin(),
+    new webpack.LoaderOptionsPlugin({
+      eslint: {
+        parser: 'babel-eslint',
+        extends: 'react-app'
+      }
+    }),
     new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
     new AssetsPlugin({
       filename: 'assets.json',
