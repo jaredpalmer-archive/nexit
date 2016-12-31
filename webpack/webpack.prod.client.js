@@ -16,6 +16,9 @@ const {
 module.exports = {
   devtool: 'source-map',
   target: 'web',
+  // this slows things down, waiting on Webpack #959
+  // @see https://github.com/webpack/webpack/issues/959
+  cache: false,
   entry: {
     main: [
       'babel-polyfill',
@@ -53,7 +56,7 @@ module.exports = {
         ],
         options: {
           presets: [
-           ["latest", { "es2015": { "modules": false  } }],
+          //  ["latest", { "es2015": { "modules": false  } }],
            'react-app'
           ],
         },
@@ -64,14 +67,6 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
       '__DEV__': false
-    }),
-
-    new webpack.LoaderOptionsPlugin({
-      minimize: true,
-      debug: true,
-      options: {
-        context: '/',
-      },
     }),
 
     new webpack.optimize.UglifyJsPlugin({
@@ -85,10 +80,6 @@ module.exports = {
       sourceMap: true,
     }),
 
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   names: ['vendor'],
-    //   minChunks: Infinity,
-    // }),
     new AssetsPlugin({
       filename: 'assets.json',
       path: buildPath

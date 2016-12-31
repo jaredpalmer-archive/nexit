@@ -73,5 +73,9 @@ module.exports = {
       '__DEV__': true
     }),
     new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+    new webpack.BannerPlugin({
+      raw: true,
+      banner: 'require("source-map-support").install();',
+    })
   ]
 }

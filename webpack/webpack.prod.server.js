@@ -15,6 +15,9 @@ module.exports = {
   target: 'node',
   devtool: 'source-map',
   externals: [nodeExternals()],
+  // this slows things down, waiting on Webpack #959
+  // @see https://github.com/webpack/webpack/issues/959
+  cache: false,
   node: {
     __filename: false,
     __dirname: false
@@ -55,7 +58,7 @@ module.exports = {
         ],
         options: {
           presets: [
-            ["latest", { "es2015": { "modules": false  } }],
+            // ["latest", { "es2015": { "modules": false  } }],
            'react-app'
           ],
         },
@@ -63,14 +66,13 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.LoaderOptionsPlugin({
-      options: {
-        context: '/',
-      },
-    }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
       '__DEV__': false
+    }),
+    new webpack.BannerPlugin({
+      raw: true,
+      banner: 'require("source-map-support").install();',
     })
   ]
 }
