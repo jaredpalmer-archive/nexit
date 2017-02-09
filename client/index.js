@@ -5,8 +5,8 @@ import browserHistory from 'react-router/lib/browserHistory';
 import applyRouterMiddleware from 'react-router/lib/applyRouterMiddleware';
 import useScroll from 'react-router-scroll/lib/useScroll';
 import match from 'react-router/lib/match';
+import { ComponentData } from '../utils/ComponentData'
 import routes from '../common/routes'
-
 // Render the application
 const render = (target = 'root') => {
   match({
@@ -23,12 +23,14 @@ const render = (target = 'root') => {
     Promise.all(imports)
       .then(() => {
         ReactDOM.render(
-          <Router
-            history={browserHistory}
-            render={applyRouterMiddleware(useScroll())}
-          >
-            {props.routes}
-          </Router>,
+          <ComponentData>
+            <Router
+              history={browserHistory}
+              render={applyRouterMiddleware(useScroll())}
+            >
+              {props.routes}
+            </Router>
+          </ComponentData>,
           document.getElementById(target)
         );
       });

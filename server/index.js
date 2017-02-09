@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import compression from 'compression'
 import helmet from 'helmet'
 import hpp from 'hpp'
+import http from 'http'
 
 import React from 'react'
 import ReactDOM from 'react-dom/server'
@@ -11,6 +12,8 @@ import ReactHelmet from 'react-helmet'
 import RouterContext from 'react-router/lib/RouterContext'
 import createMemoryHistory from 'react-router/lib/createMemoryHistory'
 import match from 'react-router/lib/match'
+import { ComponentData } from '../utils/ComponentData'
+import resolve from '../utils/resolveSimple'
 
 import routes from '../common/routes'
 const assets = require('../build/assets.json')
@@ -78,10 +81,16 @@ app.get('/*', (req, res) => {
     } else if (redirectLocation) {
       res.redirect(302, `${redirectLocation.pathname}${redirectLocation.search}`)
     } else if (renderProps) {
-      const html = ReactDOM.renderToString(<RouterContext {...renderProps} />)
-      const { meta, title, link } = ReactHelmet.rewind()
-      // finish sending the page to the browser
-      res.status(200).send(`
+      resolve(RouterContext, renderProps)
+      .then(data => {
+          const html = ReactDOM.renderToString(
+            <ComponentData data={data}>
+              <RouterContext {...renderProps} />
+            </ComponentData>
+          )
+          const { meta, title, link } = ReactHelmet.rewind()
+          // finish sending the page to the browser
+          res.status(200).send(`
 <!doctype html>
 <html>
   <head>
@@ -98,24 +107,22 @@ app.get('/*', (req, res) => {
     <div id="root"><div>${html}</div></div>
   </body>
 </html>`)
+      })
+      .catch(e => res.status(404).send('Not found'))
     } else {
       res.status(404).send('Not found')
-    }
+    }   
   })
 })
 
-// app.listen(, () => {
-//   console.log(`> listening on port ${ process.env.PORT || 3000 }`)
-// })
-import http from 'http'
 // Create HTTP Server
-const server = http.createServer(app);
+const server = http.createServer(app)
 
 const port = (parseInt(process.env.PORT, 10) || 3000) - !!__DEV__
 // Start
 const listener = server.listen(port, err => {
-  if (err) throw err;
-  console.log(`🚀  started on port ${port}`);
-});
+  if (err) throw err
+  console.log(`🚀  started on port ${port}`)
+})
 
-export default listener;
+export default listener
