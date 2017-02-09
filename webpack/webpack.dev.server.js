@@ -76,6 +76,6 @@ module.exports = {
       raw: true,
       banner: 'require("source-map-support").install();',
     }),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin()
   ]
 }

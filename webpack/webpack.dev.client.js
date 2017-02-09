@@ -111,8 +111,10 @@ module.exports = {
       '__SERVER__': false
     }),
     new webpack.NamedModulesPlugin(),
-    new FriendlyErrorsWebpackPlugin(),
+    new FriendlyErrorsWebpackPlugin({
+      clearConsole: false
+    }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin()
   ]
 }

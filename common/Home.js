@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
+import Helmet from 'react-helmet'
+import Counter from './Counter'
 
 class Home extends Component {
-  static async getInitialProps({ props, req, res }) {
-    console.log(props)
+  static async getInitialProps(ctx) {
     const thing = await Promise.resolve({ hello: 'world' })
     return thing
   }
@@ -10,7 +11,9 @@ class Home extends Component {
   render () {
     return (
       <div>
+        <Helmet title='Home' />
         this is dope shit {this.props.hello}
+        <Counter />
       </div>
     )
   }

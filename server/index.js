@@ -12,8 +12,8 @@ import ReactHelmet from 'react-helmet'
 import RouterContext from 'react-router/lib/RouterContext'
 import createMemoryHistory from 'react-router/lib/createMemoryHistory'
 import match from 'react-router/lib/match'
-import { ComponentData } from '../utils/ComponentData'
-import resolve from '../utils/resolveSimple'
+import { ComponentData } from '../lib/ComponentData'
+import resolve from '../lib/resolve'
 
 import routes from '../common/routes'
 const assets = require('../build/assets.json')
@@ -81,7 +81,7 @@ app.get('/*', (req, res) => {
     } else if (redirectLocation) {
       res.redirect(302, `${redirectLocation.pathname}${redirectLocation.search}`)
     } else if (renderProps) {
-      resolve(RouterContext, renderProps, req, res)
+      resolve(RouterContext, renderProps)
       .then(data => {
           const html = ReactDOM.renderToString(
             <ComponentData data={data}>
@@ -119,10 +119,11 @@ app.get('/*', (req, res) => {
 const server = http.createServer(app)
 
 const port = (parseInt(process.env.PORT, 10) || 3000) - !!__DEV__
+const proxyPort = port + 1;
 // Start
 const listener = server.listen(port, err => {
   if (err) throw err
-  console.log(`🚀  started on port ${port}`)
+  console.log(`🚀  started on port ${proxyPort}`)
 })
 
 export default listener

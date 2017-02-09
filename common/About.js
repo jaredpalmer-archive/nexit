@@ -1,8 +1,15 @@
 import React, {Component} from 'react'
+import Helmet from 'react-helmet'
+import Counter from './Counter'
 
 class About extends Component {
   state = {
     value: ''
+  }
+
+  static async getInitialProps() {
+    const thing = await Promise.resolve({ hello: 'world' })
+    return thing
   }
 
   onClick = (e) => {
@@ -13,8 +20,10 @@ class About extends Component {
   render () {
     return (
       <div onClick={this.onClick}>
+        <Helmet title='About' />
         {this.state.value}
-        This is pretty dopess
+        About
+        <Counter />
       </div>
     )
   }
