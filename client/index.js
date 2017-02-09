@@ -1,12 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Router from 'react-router/lib/Router';
-import browserHistory from 'react-router/lib/browserHistory';
-import applyRouterMiddleware from 'react-router/lib/applyRouterMiddleware';
-import useScroll from 'react-router-scroll/lib/useScroll';
-import match from 'react-router/lib/match';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Router from 'react-router/lib/Router'
+import browserHistory from 'react-router/lib/browserHistory'
+import applyRouterMiddleware from 'react-router/lib/applyRouterMiddleware'
+import useScroll from 'react-router-scroll/lib/useScroll'
+import match from 'react-router/lib/match'
 import { ComponentData } from '../utils/ComponentData'
 import routes from '../common/routes'
+
 // Render the application
 const render = (target = 'root') => {
   match({
@@ -17,7 +18,7 @@ const render = (target = 'root') => {
     // Make sure that all System.imports are loaded before rendering
     const imports = props.routes
       .filter(route => route.getComponent)
-      .map(route => new Promise(resolve => route.getComponent(location, resolve)));
+      .map(route => new Promise(resolve => route.getComponent(location, resolve)))
 
     // Run the chain
     Promise.all(imports)
@@ -32,17 +33,17 @@ const render = (target = 'root') => {
             </Router>
           </ComponentData>,
           document.getElementById(target)
-        );
-      });
-  });
-};
+        )
+      })
+  })
+}
 
 // Render for the first time
-render();
+render()
 
 if (module.hot) {
   // Remove some warnings and errors related to
   // hot reloading and System.import conflicts.
-  require('../common/utils/hmr'); // eslint-disable-line
-  module.hot.accept(() => render());
+  require('../common/utils/hmr') // eslint-disable-line
+  module.hot.accept(() => render())
 }

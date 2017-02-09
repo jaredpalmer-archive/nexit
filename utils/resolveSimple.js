@@ -6,7 +6,7 @@ export default function resolve(component, props, req, res) {
   const methodName = 'getInitialProps';
 
   if (!component.prototype || !component.prototype.isReactComponent) {
-    throw new Error('[React Component Data] Resolve expects a valid react component');
+    throw new Error('resolve() expects a valid react component');
   }
 
   const element = React.createElement(component, props);

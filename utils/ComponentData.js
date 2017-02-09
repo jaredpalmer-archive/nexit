@@ -1,6 +1,6 @@
-import React from 'react';
-import { Resolver } from './Resolver.js';
-import { getScript, getScriptData, isClient } from './script.js';
+import React from 'react'
+import { Resolver } from './Resolver.js'
+import { getScript, getScriptData, isClient } from './script.js'
 
 /* 
   - Handles passing of data down the tree and re-hydration between server and client
@@ -17,11 +17,11 @@ import { getScript, getScriptData, isClient } from './script.js';
 class ComponentData extends React.PureComponent {
 
   constructor(props, context){
-    super(props);
+    super(props)
 
     this.state = {
       data: null
-    };
+    }
   }
 
   getChildContext () {
@@ -29,47 +29,47 @@ class ComponentData extends React.PureComponent {
       method: this.props.method,
       data: this.state.data,
       time: this.state.time
-    };
+    }
   }
 
-  componentWillMount(){
-    let data;
-    let time;
+  componentWillMount() {
+    let data
+    let time
 
     // If client-side grab <script> data from DOM before it's wiped clean
     // This way we don't have to require that the library user add the <script> tag themself
-    if (isClient()){
-      data = getScriptData();
+    if (isClient()) {
+      data = getScriptData()
 
-      const d = new Date();
-      time = d.getTime();
+      const d = new Date()
+      time = d.getTime()
 
     // If server-side then we expect all data to be passed in as a prop
-    }else{
-      data = this.props.data;
+    } else {
+      data = this.props.data
     }
 
     if (data){
       this.setState({ 
         data: data,
         time: time
-      });
+      })
     }
   }
 
-  render(){
+  render() {
 
-    const { data } = this.state;
+    const { data } = this.state
 
-    const { children } = this.props;
-    const Child = React.Children.only(children);
+    const { children } = this.props
+    const Child = React.Children.only(children)
 
-    let NewChild;
+    let NewChild
 
     if (Child.type.displayName === 'Router' || Child.type.displayName === 'RouterContext'){
-      NewChild = React.cloneElement(Child, { createElement: routerCreateElement() });
-    }else{
-      NewChild = wrapWithResolver(Child.type, Child.props);
+      NewChild = React.cloneElement(Child, { createElement: routerCreateElement() })
+    } else {
+      NewChild = wrapWithResolver(Child.type, Child.props)
     }
 
     return (
@@ -79,15 +79,15 @@ class ComponentData extends React.PureComponent {
           <span>{getScript(data)}</span> 
         }
       </span>
-    );
+    )
   }
-};
+}
 
 ComponentData.childContextTypes = {
   method: React.PropTypes.string,
   data: React.PropTypes.object,
   time: React.PropTypes.number
-};
+}
 
 ComponentData.defaultProps = {
   method: 'getInitialProps',
@@ -98,16 +98,16 @@ ComponentData.defaultProps = {
 // We use location key so that Resolver re-mounts on route change
 function routerCreateElement() {
   return function(Component, props) {
-    return wrapWithResolver(Component, props, props.location.key);
+    return wrapWithResolver(Component, props, props.location.key)
   }
 }
 
-function wrapWithResolver(WrappedComponent, props, key){
+function wrapWithResolver(WrappedComponent, props, key) {
   return (
     <Resolver key={key} mainComponent={true}>
       <WrappedComponent {...props} />
     </Resolver>
-  );
+  )
 }
 
 // HOC (added manually to nested components)
@@ -117,8 +117,8 @@ const withData = (WrappedComponent) => {
     <Resolver>
       <WrappedComponent {...props} />
     </Resolver>
-  );
+  )
 }
 
 
-export { ComponentData, withData };
+export { ComponentData, withData }

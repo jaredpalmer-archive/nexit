@@ -54,7 +54,7 @@ module.exports = {
         ],
         options: {
           presets: [
-            // ["latest", { "es2015": { "modules": false  } }],
+           ["latest", { "es2015": { "modules": false  } }],
            'react-app'
           ],
         },
