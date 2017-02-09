@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
 
 class Home extends Component {
-  static async getInitialProps() {
+  static async getInitialProps({ props, req, res }) {
+    console.log(props)
     const thing = await Promise.resolve({ hello: 'world' })
     return thing
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import Promise from 'promise-polyfill'; 
 
-export default function resolve(component, props) {
+export default function resolve(component, props, req, res) {
 
   const methodName = 'getInitialProps';
 
@@ -38,5 +38,5 @@ export default function resolve(component, props) {
 
   // Call the first component's data method
   // In the future we can consider fetching data for nested components
-  return Promise.resolve(withFunction[0][methodName]());
+  return Promise.resolve(withFunction[0][methodName]({ props, req, res }));
 }

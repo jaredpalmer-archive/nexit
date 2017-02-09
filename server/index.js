@@ -81,7 +81,7 @@ app.get('/*', (req, res) => {
     } else if (redirectLocation) {
       res.redirect(302, `${redirectLocation.pathname}${redirectLocation.search}`)
     } else if (renderProps) {
-      resolve(RouterContext, renderProps)
+      resolve(RouterContext, renderProps, req, res)
       .then(data => {
           const html = ReactDOM.renderToString(
             <ComponentData data={data}>

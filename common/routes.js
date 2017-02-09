@@ -39,6 +39,7 @@ const routes = (
   <Route path='/' component={App}>
     <IndexRoute getComponent={loadRoute('Home')} />
     <Route path='about' getComponent={loadRoute('About')} />
+    <Route path='detail/:id' getComponent={loadRoute('Detail')} />
   </Route>
 )
 
