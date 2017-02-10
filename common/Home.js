@@ -12,7 +12,7 @@ class Home extends Component {
     return (
       <div>
         <Helmet title='Home' />
-        this is dope shit {this.props.hello}
+        This is Home {this.props.hello}
         <Counter />
       </div>
     )
