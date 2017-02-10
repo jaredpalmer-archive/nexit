@@ -1,8 +1,16 @@
-# NEXiT.js 
+# NEXiT 
 
 Think Brexit, but for Next.js... but not really.
 
-I love Next.js, but I'm not the biggest fan of the filesystem-as-the-router approach. So I put this together. It mashes up the data fetching of Next with your good old friend react-router v3. Everything else is universal react server-side rendering boilerplate...yawn.
+Next.js is great, but I'm not the biggest fan of the filesystem-as-the-router approach. So I put this together. It mashes up the data fetching of Next with your good old friend react-router v3. Everything else is universal react server-side rendering boilerplate.
+
+## Installation
+```bash
+git clone https://github.com/jaredpalmer/nexit.git
+cd nexit && yarn
+yarn start
+```
+Still working through some dx kinks with browser-sync. Build time is pretty slow right now. 
 
 ## Routing
 Routing is handled by react-router v3. We declare all routes in a centralized file as follows:
@@ -100,9 +108,7 @@ export default Repo
 Right now this is a boilerplate, which isn't ideal. Depending on how "frameworky" this gets there are a few possible outcomes:
 
 - Abstract the data-fetching into its own package
-- Abstract the build tools into their own repo.
-- Combine this build tool with [palmerhq/backpack](https://github.com/palmerhq/backpack) project. Backpack can thus support universal rendering. Then make this a just Backpack app.
-- Make this the next version of react-production-starter.
+- Combine this build setup with [palmerhq/backpack](https://github.com/palmerhq/backpack) project. Then make this just another Backpack app.
 
 ## Inspiration:
 
