@@ -46,7 +46,6 @@ export default routes
 ```
 
 Each route is dynamically loaded using a util `loadRoute.js`, which abstracts away `System.import()` and handles some caching.
-Note: During development, dynamic loading is turned off because it doesn't work well when using react-hot-loader + react-router 3 together (which we are).
 
 ## Data Fetching
 When you need state, lifecycle hooks or *initial data population* you can export a `React.Component` like so:
