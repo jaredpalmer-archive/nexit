@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 
 class Detail extends Component {
-  static async getInitialProps({ props, req, res }) {
+  static async getInitialProps({ router, req, res }) {
     const thing = await Promise.resolve({
       hello: 'world',
-      other: props.params.id 
+      name: router.params.id 
     })
 
     return thing
