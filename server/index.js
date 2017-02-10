@@ -96,7 +96,7 @@ app.get('/*', (req, res) => {
         )
         
         // these will also break rapscallion
-        // inserting ${() => title} will yield into the template
+        // inserting ${() => title} into the template's <head>
         // will throw TypeError: Invalid non-string/buffer chunk
         const { meta, title, link } = ReactHelmet.rewind()
 
