@@ -58,7 +58,7 @@ export default class MyPage extends React.Component {
     </div>
   }
 }
-```js
+```
 
 Notice that to load data when the page loads, we use `getInitialProps` which is an async static method. It can asynchronously fetch anything that resolves to a JavaScript plain Object, which populates props.
 
