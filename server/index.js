@@ -100,11 +100,12 @@ app.get('/*', (req, res) => {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6"></script>
     ${meta} ${title} ${link}
+    <script src="${assetUrl + assets.vendor.js}" defer></script>
+    <script src="${assetUrl + assets.main.js}" defer></script>
   </head>
   <body>
     <div id="root"><div>${html}</div></div>
-    <script src="${assetUrl + assets.vendor.js}" defer></script>
-    <script src="${assetUrl + assets.main.js}" defer></script>
+    <script>window._initialState = ${JSON.stringify(data)}</script>
   </body>
 </html>`)
       })

@@ -24,7 +24,7 @@ const render = (target = 'root') => {
     Promise.all(imports)
       .then(() => {
         ReactDOM.render(
-          <ComponentData>
+          <ComponentData data={window._initialState || null}>
             <Router
               history={browserHistory}
               render={applyRouterMiddleware(useScroll())}
@@ -34,6 +34,8 @@ const render = (target = 'root') => {
           </ComponentData>,
           document.getElementById(target)
         )
+
+        delete window._initialState
       })
   })
 }
