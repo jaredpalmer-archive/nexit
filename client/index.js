@@ -5,7 +5,7 @@ import browserHistory from 'react-router/lib/browserHistory'
 import applyRouterMiddleware from 'react-router/lib/applyRouterMiddleware'
 import useScroll from 'react-router-scroll/lib/useScroll'
 import match from 'react-router/lib/match'
-import { ComponentData } from '../utils/ComponentData'
+import { ComponentData } from '../lib/ComponentData'
 import routes from '../common/routes'
 
 // Render the application
