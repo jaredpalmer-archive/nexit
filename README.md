@@ -68,9 +68,9 @@ For the initial page load, `getInitialProps` will execute on the server only. `g
 ### Parameterized routes and data fetching
 `getInitialProps` receives a context object with the following properties:
 
-- router - react-router's v3 props! (e.g. `location`, `query`, `params`)
-- req - HTTP request object (server only)
-- res - HTTP response object (server only)
+- `router` - react-router's v3 props! (e.g. `location`, `query`, `params`)
+- `req` - HTTP request object (server only)
+- `res` - HTTP response object (server only)
 
 Thus, you can fetch data based on the current route like so:
 ```js
@@ -107,6 +107,9 @@ Right now this is a boilerplate, which isn't ideal. Depending on how "frameworky
 ## Inspiration:
 
 - Most of the data-fetching code is taken directly from Gabe Ragland's [react-component-data](https://github.com/gragland/react-component-data). This version modifies Gabe's implementation by passing a Next.js-like `ctx` argument to `getInitialProps()` that includes `renderProps`, `req`, and `res`.
-- The development webpack setup comes from Ueno's starterkit.
-- Next.js
+- The development webpack setup comes from Ueno's starterkit
+
+## Author
+
+- Jared Palmer - ([@jarepalmer](https://twitter.com/jaredpalmer))
 
