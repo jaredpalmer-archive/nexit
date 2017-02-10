@@ -12,8 +12,10 @@ import ReactHelmet from 'react-helmet'
 import RouterContext from 'react-router/lib/RouterContext'
 import createMemoryHistory from 'react-router/lib/createMemoryHistory'
 import match from 'react-router/lib/match'
+import { render, template } from "rapscallion"
 import { ComponentData } from '../lib/ComponentData'
 import resolve from '../lib/resolve'
+import Home from '../common/Home'
 
 import routes from '../common/routes'
 const assets = require('../build/assets.json')
@@ -83,15 +85,24 @@ app.get('/*', (req, res) => {
     } else if (renderProps) {
       resolve(RouterContext, renderProps)
       .then(data => {
-          const html = ReactDOM.renderToString(
-            <ComponentData data={data}>
-              <RouterContext {...renderProps} />
-            </ComponentData>
-          )
-          const { meta, title, link } = ReactHelmet.rewind()
-          // finish sending the page to the browser
-          res.status(200).send(`
-<!doctype html>
+        // this will render with rapscallion
+        // const html = render(
+        //     <Home hello="world"/>
+        // )
+        const html = render(
+          <ComponentData data={data}>
+            <RouterContext {...renderProps}/>
+          </ComponentData>
+        )
+        
+        // these will also break rapscallion
+        // inserting ${() => title} will yield into the template
+        // will throw TypeError: Invalid non-string/buffer chunk
+        const { meta, title, link } = ReactHelmet.rewind()
+
+        
+        // finish sending the page to the browser
+        const resRenderer = template`<!doctype html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -99,15 +110,15 @@ app.get('/*', (req, res) => {
     <meta httpEquiv="Content-Language" content="en" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6"></script>
-    ${meta} ${title} ${link}
     <script src="${assetUrl + assets.vendor.js}" defer></script>
     <script src="${assetUrl + assets.main.js}" defer></script>
   </head>
   <body>
     <div id="root"><div>${html}</div></div>
-    <script>window._initialState = ${JSON.stringify(data)}</script>
+    <script type="text/json" id="_initialState">${() => JSON.stringify(data)}</script>
   </body>
-</html>`)
+</html>`
+        resRenderer.toStream().pipe(res)
       })
       .catch(e => res.status(404).send('Not found'))
     } else {
