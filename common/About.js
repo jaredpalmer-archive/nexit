@@ -22,7 +22,7 @@ class About extends Component {
       <div onClick={this.onClick}>
         <Helmet title='About' />
         {this.state.value}
-        About
+        About {this.props.hello}
         <Counter />
       </div>
     )
