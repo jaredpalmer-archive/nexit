@@ -1,9 +1,5 @@
-'use strict'
-
-const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
-
 const {
   buildPath,
   serverSrcPath,
@@ -15,6 +11,9 @@ module.exports = {
   target: 'node',
   devtool: 'source-map',
   externals: [nodeExternals()],
+  // this slows things down, waiting on Webpack #959
+  // @see https://github.com/webpack/webpack/issues/959
+  cache: false,
   node: {
     __filename: false,
     __dirname: false
@@ -53,12 +52,25 @@ module.exports = {
           /node_modules/,
           buildPath,
         ],
-        query: {
+        options: {
           presets: [
-           "react-app"
+           ["latest", { "es2015": { "modules": false  } }],
+           'react-app'
           ],
         },
       },
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      '__DEV__': false,
+      '__CLIENT__': false,
+      '__SERVER__': true
+    }),
+    new webpack.BannerPlugin({
+      raw: true,
+      banner: 'require("source-map-support").install();',
+    })
+  ]
 }

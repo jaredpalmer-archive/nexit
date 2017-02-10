@@ -1,14 +1,19 @@
 import React, {Component} from 'react'
+import Helmet from 'react-helmet'
+import Counter from './Counter'
 
 class Home extends Component {
-  onClick = (e) => {
-    e.preventDefault()
-    console.log('clicked')
+  static async getInitialProps(ctx) {
+    const thing = await Promise.resolve({ hello: 'world' })
+    return thing
   }
+
   render () {
     return (
-      <div onClick={this.onClick}>
-        Homes
+      <div>
+        <Helmet title='Home' />
+        this is dope shit {this.props.hello}
+        <Counter />
       </div>
     )
   }

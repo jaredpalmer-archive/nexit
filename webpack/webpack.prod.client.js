@@ -1,21 +1,24 @@
-'use strict'
-
-const path = require('path');
 const webpack = require('webpack');
 const AssetsPlugin = require('assets-webpack-plugin')
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const {
   buildPath,
   clientSrcPath,
-  clientBuildPath,
-  clientUrl,
-  serverUrl,
+  assetsBuildPath,
   publicPath
 } = require('./buildConfig')
 
 module.exports = {
   devtool: 'source-map',
+  target: 'web',
+  // this slows things down, waiting on Webpack #959
+  // @see https://github.com/webpack/webpack/issues/959
+  cache: false,
   entry: {
+    vendor: [
+      'react',
+      'react-dom',
+      'react-helmet',
+    ],
     main: [
       'babel-polyfill',
       `${clientSrcPath}/index.js`,
@@ -25,8 +28,10 @@ module.exports = {
   output: {
     filename: '[name]-[chunkhash].js',
     chunkFilename: '[name]-[chunkhash].js',
+    sourceMapFilename: '[name]-[chunkhash].map',
     publicPath: publicPath,
-    path: clientBuildPath,
+    path: assetsBuildPath,
+    libraryTarget: 'var',
   },
 
   module: {
@@ -49,7 +54,7 @@ module.exports = {
           /node_modules/,
           buildPath,
         ],
-        query: {
+        options: {
           presets: [
            'react-app'
           ],
@@ -60,12 +65,15 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
-      '__DEV__': false
+      '__DEV__': false,
+      '__CLIENT__': true,
+      '__SERVER__': false
     }),
 
-    new webpack.LoaderOptionsPlugin({
-      minimize: true,
-      debug: false,
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: Infinity,
+      filename: 'vendor-[hash].js',
     }),
 
     new webpack.optimize.UglifyJsPlugin({
@@ -81,6 +89,7 @@ module.exports = {
 
     new AssetsPlugin({
       filename: 'assets.json',
+      path: buildPath
     })
   ]
 }

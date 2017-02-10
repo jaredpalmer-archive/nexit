@@ -1,32 +1,49 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { match, browserHistory, Router } from 'react-router';
-import routes from '../common/routes';
+import Router from 'react-router/lib/Router'
+import browserHistory from 'react-router/lib/browserHistory'
+import applyRouterMiddleware from 'react-router/lib/applyRouterMiddleware'
+import useScroll from 'react-router-scroll/lib/useScroll'
+import match from 'react-router/lib/match'
+import { ComponentData } from '../lib/ComponentData'
+import routes from '../common/routes'
 
-const root = document.querySelector('#root')
+// Render the application
+const render = (target = 'root') => {
+  match({
+    routes: (<Router>{routes}</Router>),
+    location: window.location,
+  }, (err, location, props) => {
 
-const onError = function(err) {
-  console.error(err);
-};
+    // Make sure that all System.imports are loaded before rendering
+    const imports = props.routes
+      .filter(route => route.getComponent)
+      .map(route => new Promise(resolve => route.getComponent(location, resolve)))
 
-match({ history: browserHistory, routes }, (err, redirect, props) => {
-  ReactDOM.render(
-      <Router {...props} onError={onError} />,
-   root
-  );
-});
+    // Run the chain
+    Promise.all(imports)
+      .then(() => {
+        ReactDOM.render(
+          <ComponentData>
+            <Router
+              history={browserHistory}
+              render={applyRouterMiddleware(useScroll())}
+            >
+              {props.routes}
+            </Router>
+          </ComponentData>,
+          document.getElementById(target)
+        )
+      })
+  })
+}
 
+// Render for the first time
+render()
 
-// const mount = (RootComponent) => {
-//   render( <RootComponent />, root)
-// }
-
-// // if (module.hot) {
-// //   module.hot.accept('./Root', () => {
-// //     // eslint-disable-next-line global-require,import/newline-after-import
-// //     const RootComponent = require('./Root').default
-// //     mount(RootComponent)
-// //   })
-// // }
-
-// mount(Root)
+if (module.hot) {
+  // Remove some warnings and errors related to
+  // hot reloading and System.import conflicts.
+  require('../common/utils/hmr') // eslint-disable-line
+  module.hot.accept(() => render())
+}

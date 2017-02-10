@@ -1,10 +1,5 @@
-'use strict'
-
-const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
-const WatchIgnorePlugin = require('watch-ignore-webpack-plugin')
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 
 const {
   buildPath,
@@ -16,10 +11,21 @@ const {
 module.exports = {
   target: 'node',
   devtool: 'source-map',
-  externals: [nodeExternals()],
+  externals: nodeExternals({
+    // ignore these file types
+    whitelist: [
+      /\.(eot|woff|woff2|ttf|otf)$/,
+      /\.(svg|png|jpg|jpeg|gif|ico|webm)$/,
+      /\.(mp4|mp3|ogg|swf|webp)$/,
+      /\.(css|scss|sass|less|styl)$/,
+    ],
+  }),
+  performance: {
+    hints: false
+  },
   node: {
-    __filename: false,
-    __dirname: false
+    __filename: true,
+    __dirname: true
   },
   entry: {
     main: [
@@ -30,19 +36,14 @@ module.exports = {
   output: {
     path: serverBuildPath,
     filename: '[name].js',
+    sourceMapFilename: '[name].map',
+    chunkFilename: '[name]-[chunkhash].js',
     publicPath: publicPath,
     libraryTarget: 'commonjs2',
   },
 
   module: {
     rules: [
-      {
-        test: /\.(jpg|jpeg|png|gif|eot|svg|ttf|woff|woff2)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 20000,
-        },
-      },
       {
         test: /\.json$/,
         loader: 'json-loader',
@@ -56,14 +57,25 @@ module.exports = {
         ],
         query: {
           presets: [
-           "react-app"
+           ["latest", { "es2015": { "modules": false  } }],
+           'react-app'
           ],
         },
       },
     ]
   },
   plugins: [
-    new webpack.NoErrorsPlugin(),
-    // new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development'),
+      '__DEV__': true,
+      '__CLIENT__': false,
+      '__SERVER__': true
+    }),
+    new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+    new webpack.BannerPlugin({
+      raw: true,
+      banner: 'require("source-map-support").install();',
+    }),
+    new webpack.NoEmitOnErrorsPlugin()
   ]
 }

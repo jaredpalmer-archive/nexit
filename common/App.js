@@ -1,16 +1,16 @@
-import React, {Component} from 'react'
-import Link from 'react-router/lib/Link'
+import React from 'react'
+import { Link } from 'react-router'
+import Helmet from 'react-helmet'
 
-class App extends Component {
-  render () {
-    return (
-      <div>
-      <Link to="/about">About</Link>
-      <Link to="/">Home</Link>
-        {this.props.children}
-      </div>
-    )
-  }
+const App = ({ children }) => {
+  return (
+    <div>
+      <Helmet title='Razzle' />
+      <Link to='/'>Homes</Link>
+      <Link to='/about'>Abousssst</Link>
+      {children}
+    </div>
+  )
 }
 
 export default App
